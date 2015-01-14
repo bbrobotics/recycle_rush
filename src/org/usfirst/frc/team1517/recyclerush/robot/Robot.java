@@ -1,4 +1,3 @@
-
 package org.usfirst.frc.team1517.recyclerush.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
