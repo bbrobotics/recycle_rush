@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Jaguar;
 /**
  *
  * @author Zoraver
+ * @deprecated See MecanumDriveGeneral.
  */
 public class MecanumDrivePWM {
     
