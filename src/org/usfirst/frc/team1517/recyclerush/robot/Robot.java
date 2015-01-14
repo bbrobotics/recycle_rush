@@ -1,10 +1,10 @@
 package org.usfirst.frc.team1517.recyclerush.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.CANJaguar;
+import edu.wpi.first.wpilibj.CANTalon;
 
 import org.usfirst.frc.team1517.io.XboxController;
-import org.usfirst.frc.team1517.mecanum.MecanumDrive;
+import org.usfirst.frc.team1517.mecanum.MecanumDriveGeneral;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -15,9 +15,9 @@ import org.usfirst.frc.team1517.mecanum.MecanumDrive;
  */
 public class Robot extends IterativeRobot {
     
-	CANJaguar aF, aB, bF, bB;
+	CANTalon aF, aB, bF, bB;
 	
-	MecanumDrive drive;
+	MecanumDriveGeneral drive;
 	
 	XboxController controller;
 	
@@ -26,12 +26,12 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
-    	aF = new CANJaguar(1);
-    	aB = new CANJaguar(2);
-    	bF = new CANJaguar(3);
-    	bB = new CANJaguar(4);
+    	aF = new CANTalon(1);
+    	aB = new CANTalon(2);
+    	bF = new CANTalon(3);
+    	bB = new CANTalon(4);
     	
-    	drive = new MecanumDrive(aF, aB, bF, bB);
+    	drive = new MecanumDriveGeneral(aF, aB, bF, bB);
     	
     	controller = new XboxController(1);
     }

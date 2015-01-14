@@ -10,16 +10,16 @@ public class USBLogger {
 	BufferedWriter log;
 	
 	public USBLogger(String logFilePath) {
-		File logfile = new File(logFilePath);
-		// If log file doesn't exist, try to create it.
-		if (!logfile.exists()) {	
-			try {
+		File logfile = new File(logFilePath);			
+		try {
+			// If log file doesn't exist, try to create it.
+			if (!logfile.exists()) {
 				logfile.createNewFile();
-				// initialize buffered writer object
-				log = new BufferedWriter(new FileWriter(logfile));
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+			// initialize buffered writer object
+			log = new BufferedWriter(new FileWriter(logfile));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
