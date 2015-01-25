@@ -9,6 +9,8 @@ public class Indexer {
 	final double liftSpeed = 0.7; //Placeholder speed.  Will be tweaked with testing.
 	final double indexPosition = 15; //Placeholders.  Will be tweaked with testing.
 	final double indexTolerance = 1;
+	final double distancePerPulse = 0.7;
+	final double timeoutPerPulse = 0.7;
 	
 	Talon leftLift, rightLift;
 	DigitalInput leftCali, rightCali;
@@ -25,8 +27,8 @@ public class Indexer {
 		leftEnc = new Encoder(2, 3);//Each Encoder requires two digital inputs, as they are quadrature.
 		rightEnc = new Encoder(4, 5);//One input for channel a and one for channel b.
 		
-		leftEnc.setDistancePerPulse(0.7);//placeholder
-		rightEnc.setDistancePerPulse(0.7);
+		leftEnc.setDistancePerPulse(distancePerPulse);//placeholder
+		rightEnc.setDistancePerPulse(distancePerPulse);
 	}
 	
 	/**
@@ -86,7 +88,7 @@ public class Indexer {
 				}
 			}
 			
-			leftLift.set(0);//Just to be safe.
+			leftLift.set(0);
 			rightLift.set(0);		
 		}
 		System.out.println("Indexer position within tolerance.");
@@ -120,7 +122,7 @@ public class Indexer {
 				}
 			}
 			
-			leftLift.set(0);//Just to be safe.
+			leftLift.set(0);
 			rightLift.set(0);		
 		}
 		System.out.println("Indexer position within tolerance.");
@@ -130,5 +132,10 @@ public class Indexer {
 	{
 		goToPosition(0, indexTolerance);
 		goToPosition(indexPosition, indexTolerance);
+	}
+	
+	private double getTimeout(double distance)
+	{
+		return timeoutPerPulse * distance / distancePerPulse;
 	}
 }
