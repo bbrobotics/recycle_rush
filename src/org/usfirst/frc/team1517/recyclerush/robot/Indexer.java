@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.Encoder;
 public class Indexer {
 
 	final double liftSpeed = 0.7; //Placeholder speed.  Will be tweaked with testing.
+	final double indexPosition = 15; //Placeholders.  Will be tweaked with testing.
+	final double indexTolerance = 1;
 	
 	Talon leftLift, rightLift;
 	DigitalInput leftCali, rightCali;
@@ -87,6 +89,46 @@ public class Indexer {
 			leftLift.set(0);//Just to be safe.
 			rightLift.set(0);		
 		}
-		else System.out.println("Indexer position within tolerance.");
+		System.out.println("Indexer position within tolerance.");
+	}
+	
+	public void goToPosition(double position, double tolerance)
+	{
+		if(Math.abs(leftEnc.getDistance() - position) > Math.abs(tolerance) && Math.abs(rightEnc.getDistance() - position) > Math.abs(tolerance))
+		{
+			if(leftEnc.getDistance() < position && rightEnc.getDistance() < position)//If below desired position...
+			{
+				leftLift.set(liftSpeed);
+				rightLift.set(liftSpeed);
+			}
+			else if(leftEnc.getDistance() > position && rightEnc.getDistance() > position)//If above desired position...
+			{
+				leftLift.set(-1 * liftSpeed);
+				rightLift.set(-1 * liftSpeed);
+			}
+			
+			while(Math.abs(leftEnc.getDistance() - position) > Math.abs(tolerance) && Math.abs(rightEnc.getDistance() - position) > Math.abs(tolerance))
+			{
+				if(Math.abs(leftEnc.getDistance() - position) <= Math.abs(tolerance))
+				{
+					leftLift.set(0);
+				}
+				
+				if(Math.abs(rightEnc.getDistance() - position) <= Math.abs(tolerance))
+				{
+					rightLift.set(0);
+				}
+			}
+			
+			leftLift.set(0);//Just to be safe.
+			rightLift.set(0);		
+		}
+		System.out.println("Indexer position within tolerance.");
+	}
+	
+	public void index()
+	{
+		goToPosition(0, indexTolerance);
+		goToPosition(indexPosition, indexTolerance);
 	}
 }
