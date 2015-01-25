@@ -33,7 +33,7 @@ public class Robot extends IterativeRobot {
     	
     	drive = new MecanumDriveGeneral(aF, aB, bF, bB);
     	
-    	controller = new XboxController(1);
+    	controller = new XboxController(0); //The controllers are new zero indexed.
     }
 
     /**
