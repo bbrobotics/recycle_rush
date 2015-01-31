@@ -49,7 +49,7 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         drive.drive(JoystickUtils.scaledStick(controller.getAnalogTriggers()), 
-        		JoystickUtils.scaledStick(controller.getRightJoystickY()), 
+        		JoystickUtils.scaledStick(controller.getLeftJoystickY()), 
         		JoystickUtils.scaledStick(controller.getLeftJoystickX()));
     }
     
