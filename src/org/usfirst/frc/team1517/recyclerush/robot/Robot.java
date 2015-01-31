@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 
 import org.usfirst.frc.team1517.io.XboxController;
 import org.usfirst.frc.team1517.mecanum.MecanumDriveGeneral;
+import org.usfirst.frc.team1517.utils.JoystickUtils;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -40,14 +41,16 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
-
+    	
     }
 
     /**
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        drive.drive(controller.getAnalogTriggers(), controller.getLeftJoystickY(), controller.getLeftJoystickX());
+        drive.drive(JoystickUtils.scaledStick(controller.getAnalogTriggers()), 
+        		JoystickUtils.scaledStick(controller.getRightJoystickY()), 
+        		JoystickUtils.scaledStick(controller.getLeftJoystickX()));
     }
     
     /**
