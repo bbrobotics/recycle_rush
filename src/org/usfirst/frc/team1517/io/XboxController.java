@@ -95,7 +95,11 @@ public class XboxController {
     
     public double getAnalogTriggers()
     {
-        return xb.getRawAxis(3);
+        if(xb.getRawAxis(2) > xb.getRawAxis(3))
+        {
+        	return -1 * xb.getRawAxis(2);
+        }
+        else return xb.getRawAxis(3);
     }
     
     public double getDpadX()
