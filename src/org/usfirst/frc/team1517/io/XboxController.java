@@ -75,12 +75,12 @@ public class XboxController {
     
     public double getLeftJoystickX()
     {
-        return xb.getRawAxis(1);
+        return xb.getRawAxis(0);
     }
     
     public double getLeftJoystickY()
     {
-        return xb.getRawAxis(2);
+        return xb.getRawAxis(1);
     }
     
     public double getRightJoystickX()
