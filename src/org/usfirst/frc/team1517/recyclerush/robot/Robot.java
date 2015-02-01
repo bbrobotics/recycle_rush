@@ -2,6 +2,7 @@ package org.usfirst.frc.team1517.recyclerush.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 
 import org.usfirst.frc.team1517.io.XboxController;
 import org.usfirst.frc.team1517.mecanum.MecanumDriveGeneral;
@@ -18,6 +19,8 @@ public class Robot extends IterativeRobot {
     
 	CANTalon aF, aB, bF, bB;
 	
+	BuiltInAccelerometer bIAccelerometer;
+	
 	MecanumDriveGeneral drive;
 	
 	XboxController controller;
@@ -32,9 +35,12 @@ public class Robot extends IterativeRobot {
     	bF = new CANTalon(3);
     	bB = new CANTalon(4);
     	
+    	bIAccelerometer = new BuiltInAccelerometer();
+    	
     	drive = new MecanumDriveGeneral(aF, aB, bF, bB);
     	
     	controller = new XboxController(0); //The controllers are now zero indexed.
+    	
     }
 
     /**
@@ -49,8 +55,11 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         drive.drive(JoystickUtils.scaledStick(controller.getAnalogTriggers()), 
-        		JoystickUtils.scaledStick(controller.getLeftJoystickY()), 
+        		JoystickUtils.scaledStick(controller.getLeftJoystickY()) + 0.000000001, 
         		JoystickUtils.scaledStick(controller.getLeftJoystickX()));
+        System.out.println("Accel x: " + String.valueOf(bIAccelerometer.getX()) 
+        					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
+        					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
     }
     
     /**
