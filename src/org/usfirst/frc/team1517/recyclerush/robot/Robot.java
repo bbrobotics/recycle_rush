@@ -54,9 +54,18 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        drive.drive(JoystickUtils.scaledStick(controller.getAnalogTriggers()), 
-        		JoystickUtils.scaledStick(controller.getLeftJoystickY()) + 0.000000001, 
-        		JoystickUtils.scaledStick(controller.getLeftJoystickX()));
+    	if(controller.getRightTriggerButton()){
+    		drive.drive(0.5 * JoystickUtils.scaledStick(controller.getAnalogTriggers()), 
+            		0.5 * JoystickUtils.scaledStick(controller.getLeftJoystickY()) + 0.000000001, //Such a hack.
+            		0.5 * JoystickUtils.scaledStick(controller.getLeftJoystickX()));
+    	}
+    	else
+    	{
+    		drive.drive(JoystickUtils.scaledStick(controller.getAnalogTriggers()), 
+            		JoystickUtils.scaledStick(controller.getLeftJoystickY()) + 0.000000001, //Such a hack.
+            		JoystickUtils.scaledStick(controller.getLeftJoystickX()));
+    	}
+        
         System.out.println("Accel x: " + String.valueOf(bIAccelerometer.getX()) 
         					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
         					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
