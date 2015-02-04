@@ -37,7 +37,13 @@ public class MecanumDriveGeneral
                 theta = theta + Math.PI;
             }
             
-            A = Math.sqrt(2) * Math.sin(theta - 3 * Math.PI / 4);//Sets diagonal A to the value for theta of mechanum graph.
+            /*
+             * The phase constants are interesting because a forward movement of the joystick on the y-axis in real life
+             * returns a negative value in the code, and vice-versa.  Thus, a position of theta = pi / 2 in real life is
+             * corresponds to a position of theta = 3 pi / 2 in the code.
+             * If you graph the equations for A and B, this becomes more clear.
+             */
+            A = Math.sqrt(2) * Math.sin(theta - 3 * Math.PI / 4);//Sets diagonal A to the value for theta of the mechanum equation.
             B = Math.sqrt(2) * Math.cos(theta + Math.PI / 4);//Sets diagonal B to the value for theta of the mechanum equation.
             
             if(A > 1)//Scales A to 1 if it is higher than one.
