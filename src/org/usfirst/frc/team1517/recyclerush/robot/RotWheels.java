@@ -11,25 +11,44 @@ public class RotWheels {
 	
 	double wheelSpeed = 0.7;
 	
-	Talon leftWheel, rightWheel;
+	Talon leftWheel, rightWheel, gripper;
 	
 	public RotWheels() {
-		leftWheel = new Talon(2);
-		rightWheel = new Talon(3);
+		leftWheel = new Talon(0);
+		rightWheel = new Talon(1);
+		gripper = new Talon(2);
 	}
 	
 	public void pullIn() {
-		leftWheel.set(wheelSpeed);
-		rightWheel.set(wheelSpeed);
+		setWheels(wheelSpeed);
 	}
 	
 	public void pushOut() {
-		leftWheel.set(-1 * wheelSpeed);
-		rightWheel .set(-1 * wheelSpeed);
+		setWheels(-1* wheelSpeed);
 	}
 	
 	public void stopWheels() {
-		leftWheel.set(0);
-		rightWheel.set(0);
+		setWheels(0);
+	}
+	
+	public void setWheels(double speed)
+	{
+		leftWheel.set(speed);
+		rightWheel.set(speed);
+	}
+	
+	public void open()
+	{
+		//wip
+	}
+	
+	public void close()
+	{
+		//wip
+	}
+	
+	public void setArms(double speed)
+	{
+		gripper.set(speed);
 	}
 }
