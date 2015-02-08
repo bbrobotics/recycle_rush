@@ -1,6 +1,6 @@
 package org.usfirst.frc.team1517.recyclerush.robot;
 
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.Talon;
 
 /**
  * A class representing the tote and bin in-take system of the robot.
@@ -11,11 +11,11 @@ public class RotWheels {
 	
 	double wheelSpeed = 0.7;
 	
-	Victor leftWheel, rightWheel;
+	Talon leftWheel, rightWheel;
 	
-	public RotWheels(int leftWheelPort, int rightWheelPort) {
-		leftWheel = new Victor(leftWheelPort);
-		rightWheel = new Victor(rightWheelPort);
+	public RotWheels() {
+		leftWheel = new Talon(2);
+		rightWheel = new Talon(3);
 	}
 	
 	public void pullIn() {

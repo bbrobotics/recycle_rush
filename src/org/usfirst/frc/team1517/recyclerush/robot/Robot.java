@@ -22,8 +22,14 @@ public class Robot extends IterativeRobot {
 	BuiltInAccelerometer bIAccelerometer;
 	
 	MecanumDriveGeneral drive;
+	Indexer indexer;
+	RotWheels rWheels;
 	
 	XboxController controller;
+	
+	final int BASIC_AUTO = 8999;
+	final int INDEXER_AUTO = 9000;
+	final int LANDFILL_AUTO = 9001;
 	
 	/**
      * This function is run when the robot is first started up and should be
@@ -39,10 +45,41 @@ public class Robot extends IterativeRobot {
     	
     	drive = new MecanumDriveGeneral(aF, aB, bF, bB);
     	
+    	indexer = new Indexer();
+    	
+    	rWheels = new RotWheels();
+    	
     	controller = new XboxController(0); //The controllers are now zero indexed.
     	
     }
-
+    
+    /**
+     * This function is called when the autonomous period begins.
+     */
+    public void autonomousInit() {
+    	int autoMode = BASIC_AUTO;
+    	
+    	aF.setPosition(0);
+    	
+    	switch(autoMode)
+    	{
+    		case(BASIC_AUTO):
+    			drive.drive(0, -1, 0);
+    			while(aF.getEncPosition() < 637)
+    			{
+    				
+    			}
+    			drive.drive(0, 0, 0);
+    			break;
+    		
+    		case(INDEXER_AUTO):
+    			int numberOfTotes = 1; //replace with toggle system
+    		
+    			
+    			break;
+    	}
+    }
+    
     /**
      * This function is called periodically during autonomous
      */
@@ -75,7 +112,7 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during test mode
      */
     public void testPeriodic() {
-    
+    	
     }
     
 }
