@@ -12,14 +12,16 @@ public class Indexer {
 	final double distancePerPulse = 0.7;
 	final double timeoutPerPulse = 0.7;
 	
+	boolean indexing;
+	
 	Talon leftLift, rightLift;
 	DigitalInput leftCali, rightCali;
 	Encoder leftEnc, rightEnc;
 	
 	public Indexer()
 	{
-		leftLift = new Talon(4);//Port numbers are placeholders.
-		rightLift = new Talon(5);
+		leftLift = new Talon(0);//Port numbers are placeholders.
+		rightLift = new Talon(1);
 		
 		leftCali = new DigitalInput(0);
 		rightCali = new DigitalInput(1);
@@ -130,8 +132,24 @@ public class Indexer {
 	
 	public void index()
 	{
-		goToPosition(0, indexTolerance);
+		indexing = true;
+		calibrate();
 		goToPosition(indexPosition, indexTolerance);
+		indexing = false;
+	}
+	
+	public boolean indexThreaded()
+	{
+		if(!indexing)
+		{
+			new Thread(new Runnable{
+				public void run()
+				{
+					index();
+				}
+			}).start();
+		}
+		else return false;
 	}
 	
 	private double getTimeout(double distance)
