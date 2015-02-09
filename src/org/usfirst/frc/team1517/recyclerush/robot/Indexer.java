@@ -1,6 +1,6 @@
 package org.usfirst.frc.team1517.recyclerush.robot;
 
-import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 
@@ -12,16 +12,19 @@ public class Indexer {
 	final double distancePerPulse = 0.7;
 	final double timeoutPerPulse = 0.7;
 	
-	boolean indexing;
+	boolean indexing = false;
 	
-	Talon leftLift, rightLift;
+	CANTalon leftLift, rightLift;
 	DigitalInput leftCali, rightCali;
 	Encoder leftEnc, rightEnc;
 	
 	public Indexer()
 	{
-		leftLift = new Talon(0);//Port numbers are placeholders.
-		rightLift = new Talon(1);
+		leftLift = new CANTalon(5);
+		rightLift = new CANTalon(6);
+		
+		leftLift.enableBrakeMode(true);
+		rightLift.enableBrakeMode(true);
 		
 		leftCali = new DigitalInput(0);
 		rightCali = new DigitalInput(1);
@@ -97,7 +100,7 @@ public class Indexer {
 	}
 	
 	public void goToPosition(double position, double tolerance)
-	{
+	{	
 		if(Math.abs(leftEnc.getDistance() - position) > Math.abs(tolerance) && Math.abs(rightEnc.getDistance() - position) > Math.abs(tolerance))
 		{
 			if(leftEnc.getDistance() < position && rightEnc.getDistance() < position)//If below desired position...
@@ -130,6 +133,11 @@ public class Indexer {
 		System.out.println("Indexer position within tolerance.");
 	}
 	
+	public void moveToHigh()
+	{
+		
+	}
+	
 	public void index()
 	{
 		indexing = true;
@@ -142,12 +150,29 @@ public class Indexer {
 	{
 		if(!indexing)
 		{
-			new Thread(new Runnable{
+			new Thread(new Runnable(){
 				public void run()
 				{
 					index();
 				}
 			}).start();
+			return true;
+		}
+		else return false;
+	}
+	
+	public boolean isIndexing()
+	{
+		return indexing;
+	}
+	
+	public boolean manualControl(double speedL, double speedR)
+	{
+		if(!indexing)
+		{
+			leftLift.set(speedL);
+			rightLift.set(speedR);
+			return true;
 		}
 		else return false;
 	}
