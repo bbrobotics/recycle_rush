@@ -6,13 +6,14 @@ import edu.wpi.first.wpilibj.Encoder;
 
 public class Indexer {
 
-	final double liftSpeed = 0.7; //Placeholder speed.  Will be tweaked with testing.
+	final double liftSpeed = 1; //Placeholder speed.  Will be tweaked with testing.
 	final double indexPosition = 15; //Placeholders.  Will be tweaked with testing.
 	final double indexTolerance = 1;
 	final double distancePerPulse = 0.7;
 	final double timeoutPerPulse = 0.7;
 	
 	boolean indexing = false;
+	boolean calibrating = false;
 	
 	CANTalon leftLift, rightLift;
 	DigitalInput leftCali, rightCali;
@@ -26,8 +27,8 @@ public class Indexer {
 		leftLift.enableBrakeMode(true);
 		rightLift.enableBrakeMode(true);
 		
-		leftCali = new DigitalInput(0);
-		rightCali = new DigitalInput(1);
+		leftCali = new DigitalInput(9);
+		rightCali = new DigitalInput(8);
 		
 		leftEnc = new Encoder(2, 3);//Each Encoder requires two digital inputs, as they are quadrature.
 		rightEnc = new Encoder(4, 5);//One input for channel a and one for channel b.
@@ -42,6 +43,8 @@ public class Indexer {
 	 */
 	public void calibrate()
 	{
+		System.out.println("Entering calibrate");
+		
 		leftLift.set(-1 * liftSpeed);
 		rightLift.set(-1 * liftSpeed);
 		
@@ -63,6 +66,26 @@ public class Indexer {
 		
 		leftEnc.reset();
 		rightEnc.reset();
+		
+		System.out.println("Exiting calibrate");
+	}
+	
+	public boolean calibrateThreaded()
+	{
+		if(!calibrating)
+		{
+			calibrating = true;
+			new Thread(new Runnable(){
+				public void run()
+				{
+					System.out.println("Runnable starting");
+					calibrate();
+					calibrating = false;
+				}
+			}).start();
+			return true;
+		}
+		else return false;
 	}
 	
 	public void goToTicks(int ticks, int tolerance)
@@ -175,6 +198,16 @@ public class Indexer {
 			return true;
 		}
 		else return false;
+	}
+	
+	public boolean getLeftCali()
+	{
+		return leftCali.get();
+	}
+	
+	public boolean getRightCali()
+	{
+		return rightCali.get();
 	}
 	
 	private double getTimeout(double distance)

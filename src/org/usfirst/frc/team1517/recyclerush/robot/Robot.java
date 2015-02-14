@@ -111,15 +111,16 @@ public class Robot extends IterativeRobot {
     				JoystickUtils.scaledStick(controller.getLeftJoystickX()));
     	}
         
-        System.out.println("Accel x: " + String.valueOf(bIAccelerometer.getX()) 
-        					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
-        					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
+       //System.out.println("Accel x: " + String.valueOf(bIAccelerometer.getX()) 
+       // 					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
+       // 					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
         
-       /*if(jdController.getRawButton(2))
+       if(jdController.getRawButton(2))
        {
-    	   indexer.indexThreaded();
+    	   //indexer.indexThreaded();
+    	   indexer.calibrateThreaded();
        }
-       else*/ if(jdController.getRawButton(3) && !indexer.isIndexing())
+       else if(jdController.getRawButton(3) && !indexer.isIndexing())
        {
     	   indexer.manualControl(1, 1);
        }
@@ -127,7 +128,10 @@ public class Robot extends IterativeRobot {
        {
     	   indexer.manualControl(-1, -1);
        }
-       else indexer.manualControl(0, 0);
+       else if(!indexer.calibrating)
+       {
+    	   indexer.manualControl(0, 0);
+       }
        
        if(jdController.getRawButton(4))
        {
@@ -146,7 +150,7 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during test mode
      */
     public void testPeriodic() {
-    	
+    	 
     }
     
 }
