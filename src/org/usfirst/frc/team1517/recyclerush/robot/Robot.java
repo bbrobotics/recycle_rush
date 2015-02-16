@@ -60,32 +60,32 @@ public class Robot extends IterativeRobot {
      * This function is called when the autonomous period begins.
      */
     public void autonomousInit() {
-    	int autoMode = BASIC_AUTO;
-    	
-    	aF.setPosition(0);
-    	
-    	switch(autoMode)
-    	{
-    		case(BASIC_AUTO):
-    			drive.drive(0, -1, 0);
-    			while(aF.getEncPosition() < 637)
-    			{
-    				
-    			}
-    			drive.drive(0, 0, 0);
-    			break;
-    		
-    		case(INDEXER_AUTO):
-    			int numberOfTotes = 1; //replace with toggle system
-    			
-    			rWheels.pullIn();
-    			
-    			drive.drive(0, -0.7, 0);
-    			
-    			//indexing has to be added.
-    			
-    			break;
-    	}
+//    	int autoMode = BASIC_AUTO;
+//    	
+//    	aF.setPosition(0);
+//    	
+//    	switch(autoMode)
+//    	{
+//    		case(BASIC_AUTO):
+//    			drive.drive(0, -1, 0);
+//    			while(aF.getEncPosition() < 637)
+//    			{
+//    				
+//    			}
+//    			drive.drive(0, 0, 0);
+//    			break;
+//    		
+//    		case(INDEXER_AUTO):
+//    			int numberOfTotes = 1; //replace with toggle system
+//    			
+//    			rWheels.pullIn();
+//    			
+//    			drive.drive(0, -0.7, 0);
+//    			
+//    			//indexing has to be added.
+//    			
+//    			break;
+//    	}
     }
     
     /**
@@ -102,7 +102,7 @@ public class Robot extends IterativeRobot {
     	if(controller.getRightTriggerButton()){
     		drive.drive(0.5 * JoystickUtils.scaledStick(controller.getAnalogTriggers()),
     				0.5 * JoystickUtils.scaledStick(controller.getLeftJoystickY()) + 0.000000001, //Such a hack.
-    				0.5 * JoystickUtils.scaledStick(controller.getLeftJoystickX()));
+    				0.5 * JoystickUtils.scaledStick(controller.getLeftJoystickX()));	
     	}
     	else
     	{
@@ -114,21 +114,25 @@ public class Robot extends IterativeRobot {
        //System.out.println("Accel x: " + String.valueOf(bIAccelerometer.getX()) 
        // 					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
        // 					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
+    	
+       //System.out.println("Left pos: " + indexer.getLeftEnc() + " right pos: " + indexer.getRightEnc());
+       System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
         
        if(jdController.getRawButton(2))
        {
     	   //indexer.indexThreaded();
     	   indexer.calibrateThreaded();
        }
-       else if(jdController.getRawButton(3) && !indexer.isIndexing())
+       else if(jdController.getRawButton(3) && !indexer.isIndexing() && !indexer.calibrating)
        {
     	   indexer.manualControl(1, 1);
        }
-       else if(jdController.getRawButton(5) && !indexer.isIndexing())
+       else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating)
        {
     	   indexer.manualControl(-1, -1);
+    	   //indexer.calibrateThreaded();
        }
-       else if(!indexer.calibrating)
+       else if(!indexer.calibrating && !indexer.indexing)
        {
     	   indexer.manualControl(0, 0);
        }

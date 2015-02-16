@@ -1,37 +1,37 @@
 package org.usfirst.frc.team1517.recyclerush.robot;
 
-import edu.wpi.first.wpilibj.CANTalon;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 
 public class Indexer {
 
 	final double liftSpeed = 1; //Placeholder speed.  Will be tweaked with testing.
-	final double indexPosition = 15; //Placeholders.  Will be tweaked with testing.
-	final double indexTolerance = 1;
+	final int indexPosition = 2250; //Placeholders.  Will be tweaked with testing.
+	final int indexTolerance = 50;
 	final double distancePerPulse = 0.7;
 	final double timeoutPerPulse = 0.7;
 	
 	boolean indexing = false;
 	boolean calibrating = false;
 	
-	CANTalon leftLift, rightLift;
+	Victor leftLift, rightLift;
 	DigitalInput leftCali, rightCali;
 	Encoder leftEnc, rightEnc;
 	
 	public Indexer()
 	{
-		leftLift = new CANTalon(5);
-		rightLift = new CANTalon(6);
+		leftLift = new Victor(6);//new Talon(5);
+		rightLift = new Victor(9);//new Talon(6);
 		
-		leftLift.enableBrakeMode(true);
-		rightLift.enableBrakeMode(true);
+		//leftLift.enableBrakeMode(true);
+		//rightLift.enableBrakeMode(true);
 		
 		leftCali = new DigitalInput(9);
 		rightCali = new DigitalInput(8);
 		
-		leftEnc = new Encoder(2, 3);//Each Encoder requires two digital inputs, as they are quadrature.
-		rightEnc = new Encoder(4, 5);//One input for channel a and one for channel b.
+		leftEnc = new Encoder(4, 5);//Each Encoder requires two digital inputs, as they are quadrature.
+		rightEnc = new Encoder(7, 6);//One input for channel a and one for channel b.
 		
 		leftEnc.setDistancePerPulse(distancePerPulse);//placeholder
 		rightEnc.setDistancePerPulse(distancePerPulse);
@@ -165,7 +165,14 @@ public class Indexer {
 	{
 		indexing = true;
 		calibrate();
-		goToPosition(indexPosition, indexTolerance);
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//goToPosition(indexPosition, indexTolerance);
+		goToTicks(indexPosition, indexTolerance);
 		indexing = false;
 	}
 	
@@ -208,6 +215,16 @@ public class Indexer {
 	public boolean getRightCali()
 	{
 		return rightCali.get();
+	}
+	
+	public int getLeftEnc()
+	{
+		return leftEnc.get();
+	}
+	
+	public int getRightEnc()
+	{
+		return rightEnc.get();
 	}
 	
 	private double getTimeout(double distance)
