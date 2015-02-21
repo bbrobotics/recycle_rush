@@ -1,28 +1,33 @@
 package org.usfirst.frc.team1517.recyclerush.robot;
 
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Indexer {
 
 	final double liftSpeed = 1; //Placeholder speed.  Will be tweaked with testing.
-	final int indexPosition = 2250; //Placeholders.  Will be tweaked with testing.
-	final int indexTolerance = 50;
+	final int indexPosition = 1800;//2250; //Placeholders.  Will be tweaked with testing.
+	final int indexTolerance = 10;
 	final double distancePerPulse = 0.7;
-	final double timeoutPerPulse = 0.7;
+	final double timeoutPerPulse = 0.0017;
 	
 	boolean indexing = false;
 	boolean calibrating = false;
 	
 	Victor leftLift, rightLift;
+	//CANTalon leftLift, rightLift;
 	DigitalInput leftCali, rightCali;
 	Encoder leftEnc, rightEnc;
 	
 	public Indexer()
 	{
-		leftLift = new Victor(6);//new Talon(5);
-		rightLift = new Victor(9);//new Talon(6);
+		leftLift = new Victor(6);
+		//leftLift = new CANTalon(5);
+		rightLift = new Victor(9);
+		//rightLift = new CANTalon(6);
 		
 		//leftLift.enableBrakeMode(true);
 		//rightLift.enableBrakeMode(true);
@@ -90,20 +95,24 @@ public class Indexer {
 	
 	public void goToTicks(int ticks, int tolerance)
 	{
-		if(Math.abs(leftEnc.get() - ticks) > Math.abs(tolerance) && Math.abs(rightEnc.get() - ticks) > Math.abs(tolerance))
+		if(Math.abs(leftEnc.get() - ticks) > Math.abs(tolerance) || Math.abs(rightEnc.get() - ticks) > Math.abs(tolerance))
 		{
+			Timer timeOut = new Timer();
+			
 			if(leftEnc.get() < ticks && rightEnc.get() < ticks)//If below desired position...
 			{
 				leftLift.set(liftSpeed);
-				rightLift.set(liftSpeed);
+				rightLift.set(0.875 * liftSpeed);
 			}
 			else if(leftEnc.get() > ticks && rightEnc.get() > ticks)//If above desired position...
 			{
 				leftLift.set(-1 * liftSpeed);
-				rightLift.set(-1 * liftSpeed);
+				rightLift.set(-0.875 * liftSpeed);
 			}
 			
-			while(Math.abs(leftEnc.get() - ticks) > Math.abs(tolerance) && Math.abs(rightEnc.get() - ticks) > Math.abs(tolerance))
+			timeOut.start();
+			
+			while((leftLift.get() != 0 || rightLift.get() != 0) && getTimeoutForTicks(ticks) > timeOut.get())
 			{
 				if(Math.abs(leftEnc.get() - ticks) <= Math.abs(tolerance))
 				{
@@ -117,7 +126,9 @@ public class Indexer {
 			}
 			
 			leftLift.set(0);
-			rightLift.set(0);		
+			rightLift.set(0);
+			
+			timeOut.stop();
 		}
 		System.out.println("Indexer position within tolerance.");
 	}
@@ -201,7 +212,7 @@ public class Indexer {
 		if(!indexing)
 		{
 			leftLift.set(speedL);
-			rightLift.set(speedR);
+			rightLift.set(speedR * 0.875);
 			return true;
 		}
 		else return false;
@@ -227,7 +238,12 @@ public class Indexer {
 		return rightEnc.get();
 	}
 	
-	private double getTimeout(double distance)
+	private double getTimeoutForTicks(int ticks)
+	{
+		return timeoutPerPulse * ticks;
+	}
+	
+	private double getTimeoutForDistance(double distance)
 	{
 		return timeoutPerPulse * distance / distancePerPulse;
 	}

@@ -3,6 +3,7 @@ package org.usfirst.frc.team1517.recyclerush.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 
 import org.usfirst.frc.team1517.io.XboxController;
@@ -21,6 +22,7 @@ public class Robot extends IterativeRobot {
 	CANTalon aF, aB, bF, bB;
 	
 	BuiltInAccelerometer bIAccelerometer;
+	Encoder dEncoderLeft, dEncoderRight;
 	
 	MecanumDriveGeneral drive;
 	Indexer indexer;
@@ -43,7 +45,16 @@ public class Robot extends IterativeRobot {
     	bF = new CANTalon(3);
     	bB = new CANTalon(4);
     	
+    	aF.enableBrakeMode(false);
+    	aB.enableBrakeMode(false);
+    	bF.enableBrakeMode(false);
+    	bB.enableBrakeMode(false);
+    	
     	bIAccelerometer = new BuiltInAccelerometer();
+    	
+    	dEncoderLeft = new Encoder(0, 1);
+    	dEncoderRight = new Encoder(2, 3);
+    	
     	
     	drive = new MecanumDriveGeneral(aF, aB, bF, bB);
     	
@@ -60,17 +71,18 @@ public class Robot extends IterativeRobot {
      * This function is called when the autonomous period begins.
      */
     public void autonomousInit() {
-//    	int autoMode = BASIC_AUTO;
-//    	
-//    	aF.setPosition(0);
-//    	
+    	int autoMode = BASIC_AUTO;
+    	
+    	//aF.setPosition(0);
+    	
 //    	switch(autoMode)
 //    	{
 //    		case(BASIC_AUTO):
-//    			drive.drive(0, -1, 0);
-//    			while(aF.getEncPosition() < 637)
+//    			dEncoderRight.reset();
+//    			
+//    			while(dEncoderRight.get() > -215)
 //    			{
-//    				
+//    				drive.drive(0, -0.5, 0);
 //    			}
 //    			drive.drive(0, 0, 0);
 //    			break;
@@ -115,10 +127,15 @@ public class Robot extends IterativeRobot {
        // 					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
        // 					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
     	
-       //System.out.println("Left pos: " + indexer.getLeftEnc() + " right pos: " + indexer.getRightEnc());
+       System.out.println("Left pos: " + indexer.getLeftEnc() + " right pos: " + indexer.getRightEnc());
        System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
+       //System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
         
-       if(jdController.getRawButton(2))
+       if(jdController.getRawButton(1) && !indexer.calibrating)
+       {
+    	   indexer.indexThreaded();
+       }
+       else if(jdController.getRawButton(2) && !indexer.isIndexing())
        {
     	   //indexer.indexThreaded();
     	   indexer.calibrateThreaded();
