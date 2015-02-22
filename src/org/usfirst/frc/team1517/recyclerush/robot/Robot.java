@@ -45,10 +45,10 @@ public class Robot extends IterativeRobot {
     	bF = new CANTalon(3);
     	bB = new CANTalon(4);
     	
-    	aF.enableBrakeMode(false);
-    	aB.enableBrakeMode(false);
-    	bF.enableBrakeMode(false);
-    	bB.enableBrakeMode(false);
+    	aF.enableBrakeMode(true);
+    	aB.enableBrakeMode(true);
+    	bF.enableBrakeMode(true);
+    	bB.enableBrakeMode(true);
     	
     	bIAccelerometer = new BuiltInAccelerometer();
     	
@@ -127,9 +127,9 @@ public class Robot extends IterativeRobot {
        // 					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
        // 					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
     	
-       System.out.println("Left pos: " + indexer.getLeftEnc() + " right pos: " + indexer.getRightEnc());
-       System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
-       //System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
+       //System.out.println("Left pos: " + indexer.getLeftEnc() + " right pos: " + indexer.getRightEnc());
+       //System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
+       System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
         
        if(jdController.getRawButton(1) && !indexer.calibrating)
        {
@@ -144,10 +144,9 @@ public class Robot extends IterativeRobot {
        {
     	   indexer.manualControl(1, 1);
        }
-       else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating)
+       else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating && !indexer.getLeftCali() && !indexer.getRightCali())
        {
     	   indexer.manualControl(-1, -1);
-    	   //indexer.calibrateThreaded();
        }
        else if(!indexer.calibrating && !indexer.indexing)
        {
