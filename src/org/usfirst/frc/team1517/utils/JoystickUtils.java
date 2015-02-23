@@ -2,7 +2,7 @@ package org.usfirst.frc.team1517.utils;
 
 public class JoystickUtils {
 
-	static final double zeroThreshold = 0.07;
+	static final double zeroThreshold = 0.1;
 	
 	public static double scaledStick(double input)
 	{
