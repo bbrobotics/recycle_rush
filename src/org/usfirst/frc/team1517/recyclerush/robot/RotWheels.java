@@ -12,11 +12,12 @@ public class RotWheels {
 	
 	double wheelSpeed = 0.7;
 	
-	Victor leftWheel;
+	Victor leftWheel, gripper;
 	//Talon leftWheel, rightWheel, gripper;
 	
 	public RotWheels() {
 		leftWheel = new Victor(8);
+		gripper = new Victor(7);
 		//leftWheel = new Talon(0);
 		//rightWheel = new Talon(1);
 		//gripper = new Talon(2);
@@ -52,6 +53,6 @@ public class RotWheels {
 	
 	public void setArms(double speed)
 	{
-		//gripper.set(speed);
+		gripper.set(speed);
 	}
 }

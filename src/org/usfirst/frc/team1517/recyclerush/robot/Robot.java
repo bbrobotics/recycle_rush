@@ -30,6 +30,7 @@ public class Robot extends IterativeRobot {
 	MecanumDriveProportionalGyro drive;
 	Indexer indexer;
 	RotWheels rWheels;
+	Rollers rollers;
 	
 	XboxController controller;
 	Joystick jdController;
@@ -64,6 +65,7 @@ public class Robot extends IterativeRobot {
     	indexer = new Indexer();
     	
     	rWheels = new RotWheels();
+    	rollers = new Rollers();
     	
     	controller = new XboxController(0); //The controllers are now zero indexed.
     	jdController = new Joystick(1);
@@ -75,13 +77,11 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousInit() {
     	int autoMode = BASIC_AUTO;
-    	
-    	//aF.setPosition(0);
+    	Timer failSafe = new Timer();
     	
     	switch(autoMode)
     	{
     		case(BASIC_AUTO):
-    			Timer failSafe = new Timer();
     			dEncoderRight.reset();
     			
     			failSafe.start();
@@ -95,13 +95,42 @@ public class Robot extends IterativeRobot {
     			break;
     		
     		case(INDEXER_AUTO):
-    			int numberOfTotes = 1; //replace with toggle system
+    			int numberOfTotes = 3; //replace with toggle system
+    			Timer.delay(1);
+    	
+    			indexer.index();
     			
-    			rWheels.pullIn();
+    			for(int i = 0; i < numberOfTotes - 1; i++)
+    			{
+    				System.out.println("Entering loop in indexer auto...");
+    				dEncoderRight.reset();
+    				failSafe.start();
+    				while(dEncoderRight.get() < drive.getTicksForDistance(6.75) && failSafe.get() < 10) //10 is placeholder
+    				{
+    					drive.drive(0, -0.5, 0);
+    					System.out.println("Encoder position: " + dEncoderRight.get());
+    				}
+    				drive.drive(0, 0, 0);
+    				failSafe.stop();
+    				indexer.index();
+    				failSafe.reset();
+    			}
     			
-    			drive.drive(0, -0.7, 0);
+    			dEncoderRight.reset();
     			
-    			//indexing has to be added.
+    			drive.gyro.reset();
+    			
+    			failSafe.reset();
+    			failSafe.start();
+    			
+    			while(failSafe.get() < 5) //5 is placeholder
+    			{
+    				drive.slide(0.75);
+    			}
+    			
+    			drive.drive(0, 0, 0);
+    			
+    			failSafe.stop();
     			
     			break;
     	}
@@ -126,11 +155,11 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-    	if(controller.getRightTriggerButton() && JoystickUtils.scaledStick(controller.getLeftJoystickX()) == 0 && JoystickUtils.scaledStick(controller.getLeftJoystickY()) == 0)
+    	if(controller.getRightTriggerButton() && JoystickUtils.scaledStick(controller.getLeftJoystickX()) == 0 && JoystickUtils.scaledStick(controller.getLeftJoystickY()) == 0 && JoystickUtils.scaledStick(controller.getAnalogTriggers()) != 0)
 		{
     		drive.slide(0.5 * JoystickUtils.scaledStick(controller.getAnalogTriggers()));
 		}
-    	else if (JoystickUtils.scaledStick(controller.getLeftJoystickX()) == 0 && JoystickUtils.scaledStick(controller.getLeftJoystickY()) == 0)
+    	else if (JoystickUtils.scaledStick(controller.getLeftJoystickX()) == 0 && JoystickUtils.scaledStick(controller.getLeftJoystickY()) == 0 && JoystickUtils.scaledStick(controller.getAnalogTriggers()) != 0)
 		{
     		drive.slide(JoystickUtils.scaledStick(controller.getAnalogTriggers()));
 		}
@@ -155,7 +184,7 @@ public class Robot extends IterativeRobot {
     	
        //System.out.println("Left pos: " + indexer.getLeftEnc() + " right pos: " + indexer.getRightEnc());
        //System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
-       //System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
+       System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
     	
        if(jdController.getRawButton(1) && !indexer.calibrating)
        {
@@ -182,12 +211,18 @@ public class Robot extends IterativeRobot {
        if(jdController.getRawButton(4))
        {
     	   rWheels.pullIn();
+    	   rollers.pullIn();
        }
        else if(jdController.getRawButton(6))
        {
     	   rWheels.pushOut();
+    	   rollers.pushOut();
        }
-       else rWheels.stopWheels();
+       else 
+	   {
+    	   rWheels.stopWheels();
+    	   rollers.stop();
+	   }
        
        rWheels.setArms(jdController.getY());
     }
