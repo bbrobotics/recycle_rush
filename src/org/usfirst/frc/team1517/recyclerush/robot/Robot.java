@@ -95,7 +95,7 @@ public class Robot extends IterativeRobot {
     			break;
     		
     		case(INDEXER_AUTO):
-    			int numberOfTotes = 3; //replace with toggle system
+    			int numberOfTotes = 2; //replace with toggle system
     			Timer.delay(1);
     	
     			indexer.index();
@@ -186,24 +186,25 @@ public class Robot extends IterativeRobot {
        //System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
        System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
     	
-       if(jdController.getRawButton(1) && !indexer.calibrating)
+       if(jdController.getRawButton(1) && !indexer.calibrating && !indexer.indexing)
        {
-    	   indexer.indexThreaded();
+    	   //indexer.indexThreaded();
+    	   indexer.goToTicksThreaded(indexer.coopPosition);
        }
-       else if(jdController.getRawButton(2) && !indexer.isIndexing())
+       else if(jdController.getRawButton(2) && !indexer.isIndexing() && !indexer.moving)
        {
     	   //indexer.indexThreaded();
     	   indexer.calibrateThreaded();
        }
-       else if(jdController.getRawButton(3) && !indexer.isIndexing() && !indexer.calibrating)
+       else if(jdController.getRawButton(3) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving)
        {
     	   indexer.manualControl(1, 1);
        }
-       else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating && !indexer.getLeftCali() && !indexer.getRightCali())
+       else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving && !indexer.getLeftCali() && !indexer.getRightCali())
        {
     	   indexer.manualControl(-1, -1);
        }
-       else if(!indexer.calibrating && !indexer.indexing)
+       else if(!indexer.calibrating && !indexer.indexing && !indexer.moving)
        {
     	   indexer.manualControl(0, 0);
        }

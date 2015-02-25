@@ -8,29 +8,31 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class Indexer {
 
-	final double liftSpeed = 1; //Placeholder speed.  Will be tweaked with testing.
-	final int indexPosition = 1800;//2250; //Placeholders.  Will be tweaked with testing.
+	final double liftSpeed = 1;
+	final int indexPosition = 1800;
+	final int coopPosition = 1000;
 	final int indexTolerance = 10;
 	final double distancePerPulse = 0.7;
 	final double timeoutPerPulse = 0.0017;
 	
 	boolean indexing = false;
 	boolean calibrating = false;
+	boolean moving = false;
 	
-	Victor leftLift, rightLift;
-	//CANTalon leftLift, rightLift;
+	//Victor leftLift, rightLift;
+	CANTalon leftLift, rightLift;
 	DigitalInput leftCali, rightCali;
 	Encoder leftEnc, rightEnc;
 	
 	public Indexer()
 	{
-		leftLift = new Victor(6);
-		//leftLift = new CANTalon(5);
-		rightLift = new Victor(9);
-		//rightLift = new CANTalon(6);
+		//leftLift = new Victor(6);
+		leftLift = new CANTalon(5);
+		//rightLift = new Victor(9);
+		rightLift = new CANTalon(6);
 		
-		//leftLift.enableBrakeMode(true);
-		//rightLift.enableBrakeMode(true);
+		leftLift.enableBrakeMode(true);
+		rightLift.enableBrakeMode(true);
 		
 		leftCali = new DigitalInput(9);
 		rightCali = new DigitalInput(8);
@@ -95,6 +97,8 @@ public class Indexer {
 	
 	public void goToTicks(int ticks, int tolerance)
 	{
+		moving = true;
+		int start = leftEnc.get();
 		if(Math.abs(leftEnc.get() - ticks) > Math.abs(tolerance) || Math.abs(rightEnc.get() - ticks) > Math.abs(tolerance))
 		{
 			Timer timeOut = new Timer();
@@ -112,7 +116,7 @@ public class Indexer {
 			
 			timeOut.start();
 			
-			while((leftLift.get() != 0 || rightLift.get() != 0) && getTimeoutForTicks(ticks) > timeOut.get())
+			while((leftLift.get() != 0 || rightLift.get() != 0) && getTimeoutForTicks(Math.abs(start - ticks)) > timeOut.get())
 			{
 				if(Math.abs(leftEnc.get() - ticks) <= Math.abs(tolerance))
 				{
@@ -130,6 +134,7 @@ public class Indexer {
 			
 			timeOut.stop();
 		}
+		moving = false;
 		System.out.println("Indexer position within tolerance.");
 	}
 	
@@ -205,6 +210,21 @@ public class Indexer {
 	public boolean isIndexing()
 	{
 		return indexing;
+	}
+	
+	public boolean goToTicksThreaded(final int ticks)
+	{
+		if(!moving)
+		{
+			new Thread(new Runnable(){
+				public void run()
+				{
+					goToTicks(ticks, indexTolerance);
+				}
+			}).start();
+			return true;
+		}
+		else return false;
 	}
 	
 	public boolean manualControl(double speedL, double speedR)
