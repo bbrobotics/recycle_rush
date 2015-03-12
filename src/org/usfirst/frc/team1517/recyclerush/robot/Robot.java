@@ -39,6 +39,8 @@ public class Robot extends IterativeRobot {
 	final int INDEXER_AUTO = 9000;
 	final int LANDFILL_AUTO = 9001;
 	
+	boolean indexerMoving = true;
+	
 	/**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -155,6 +157,9 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+    	
+    	indexer.leftPID.setSetpoint(indexer.rightEnc.get());
+    	
     	if(controller.getRightTriggerButton() && JoystickUtils.scaledStick(controller.getLeftJoystickX()) == 0 && JoystickUtils.scaledStick(controller.getLeftJoystickY()) == 0 && JoystickUtils.scaledStick(controller.getAnalogTriggers()) != 0)
 		{
     		drive.slide(0.5 * JoystickUtils.scaledStick(controller.getAnalogTriggers()));
@@ -163,6 +168,10 @@ public class Robot extends IterativeRobot {
 		{
     		drive.slide(JoystickUtils.scaledStick(controller.getAnalogTriggers()));
 		}
+    	else if(controller.getButtonA())
+    	{
+    		drive.slide(JoystickUtils.scaledStick(controller.getAnalogTriggers()));
+    	}
     	else if(controller.getRightTriggerButton()){
     		drive.drive(0.5 * JoystickUtils.scaledStick(controller.getAnalogTriggers()),
     				0.5 * JoystickUtils.scaledStick(controller.getLeftJoystickY()) + 0.000000001, //Such a hack.
@@ -182,14 +191,19 @@ public class Robot extends IterativeRobot {
        // 					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
        // 					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
     	
-       //System.out.println("Left pos: " + indexer.getLeftEnc() + " right pos: " + indexer.getRightEnc());
+       System.out.println("Left pos: " + indexer.leftEnc.pidGet() + " right pos: " + indexer.getRightEnc() + " error: " + indexer.leftPID.getError());
        //System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
-       System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
+       //System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
     	
        if(jdController.getRawButton(1) && !indexer.calibrating && !indexer.indexing)
        {
     	   //indexer.indexThreaded();
-    	   indexer.goToTicksThreaded(indexer.coopPosition);
+    	   //indexer.goToTicksThreaded(indexer.coopPosition);
+    	   
+    	   if(!indexer.leftPID.isEnable())
+    	   {
+    		   indexer.leftPID.enable();
+    	   }
        }
        else if(jdController.getRawButton(2) && !indexer.isIndexing() && !indexer.moving)
        {
@@ -198,15 +212,46 @@ public class Robot extends IterativeRobot {
        }
        else if(jdController.getRawButton(3) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving)
        {
+    	   //indexerMoving = true;
     	   indexer.manualControl(1, 1);
        }
        else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving && !indexer.getLeftCali() && !indexer.getRightCali())
        {
+    	   //indexerMoving = true;
     	   indexer.manualControl(-1, -1);
        }
        else if(!indexer.calibrating && !indexer.indexing && !indexer.moving)
        {
     	   indexer.manualControl(0, 0);
+    	   
+//    	   if(indexerMoving)
+//    	   {
+//    		   indexerMoving = false;
+//    		   if(indexer.leftEnc.get() > indexer.rightEnc.get())
+//    		   {
+//    			   while(indexer.leftEnc.get() > indexer.rightEnc.get())
+//    			   {
+//    				   indexer.manualControl(0, 1);
+//    			   }
+//    			   indexer.manualControl(0, 0);
+//    		   }
+//    		   else if(indexer.rightEnc.get() > indexer.leftEnc.get())
+//    		   {
+//    			   while(indexer.rightEnc.get() > indexer.leftEnc.get())
+//    			   {
+//    				   indexer.manualControl(1, 0);
+//    			   }
+//    			   indexer.manualControl(0, 0);
+//    		   }
+//    	   }
+       }
+       
+       if(!jdController.getRawButton(1))
+       {
+    	   if(indexer.leftPID.isEnable())
+    	   {
+    		   indexer.leftPID.disable();
+    	   }
        }
        
        if(jdController.getRawButton(4))

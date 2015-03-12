@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PIDController;
 
 public class Indexer {
 
@@ -12,6 +13,7 @@ public class Indexer {
 	final int indexPosition = 1800;
 	final int coopPosition = 1000;
 	final int indexTolerance = 10;
+	final int stallCurrent = 22; //units in amperes
 	final double distancePerPulse = 0.7;
 	final double timeoutPerPulse = 0.0017;
 	
@@ -19,20 +21,21 @@ public class Indexer {
 	boolean calibrating = false;
 	boolean moving = false;
 	
-	//Victor leftLift, rightLift;
-	CANTalon leftLift, rightLift;
+	Victor leftLift, rightLift;
+	//CANTalon leftLift, rightLift;
 	DigitalInput leftCali, rightCali;
 	Encoder leftEnc, rightEnc;
+	PIDController leftPID;
 	
 	public Indexer()
 	{
-		//leftLift = new Victor(6);
-		leftLift = new CANTalon(5);
-		//rightLift = new Victor(9);
-		rightLift = new CANTalon(6);
+		leftLift = new Victor(6);
+		//leftLift = new CANTalon(5);
+		rightLift = new Victor(8);
+		//rightLift = new CANTalon(6);
 		
-		leftLift.enableBrakeMode(true);
-		rightLift.enableBrakeMode(true);
+		//leftLift.enableBrakeMode(true);
+		//rightLift.enableBrakeMode(true);
 		
 		leftCali = new DigitalInput(9);
 		rightCali = new DigitalInput(8);
@@ -40,8 +43,11 @@ public class Indexer {
 		leftEnc = new Encoder(4, 5);//Each Encoder requires two digital inputs, as they are quadrature.
 		rightEnc = new Encoder(7, 6);//One input for channel a and one for channel b.
 		
-		leftEnc.setDistancePerPulse(distancePerPulse);//placeholder
-		rightEnc.setDistancePerPulse(distancePerPulse);
+		//leftEnc.setDistancePerPulse(distancePerPulse);//placeholder
+		//rightEnc.setDistancePerPulse(distancePerPulse);
+		
+		leftPID = new PIDController(0.01, 0, 0, leftEnc, leftLift);
+		leftPID.setAbsoluteTolerance(10);
 	}
 	
 	/**
@@ -232,7 +238,7 @@ public class Indexer {
 		if(!indexing)
 		{
 			leftLift.set(speedL);
-			rightLift.set(speedR * 0.875);
+			rightLift.set(speedR * 0.8/* * 0.875*/);
 			return true;
 		}
 		else return false;

@@ -13,12 +13,13 @@ public class RotWheels {
 	double wheelSpeed = -0.7;
 	
 	Victor gripper;
-	Talon leftWheel, rightWheel;
+	Victor leftWheel;
+	//Talon leftWheel, rightWheel;
 	
 	public RotWheels() {
-		//leftWheel = new Victor(8);
-		gripper = new Victor(2);
-		leftWheel = new Talon(0);
+		leftWheel = new Victor(7);
+		gripper = new Victor(5);//new Victor(2);
+		//leftWheel = new Talon(0);
 		//rightWheel = new Talon(1);
 		//gripper = new Talon(2);
 	}
@@ -27,7 +28,7 @@ public class RotWheels {
 		setWheels(wheelSpeed);
 	}
 	
-	public void pushOut() {
+	public void pushOut() { 
 		setWheels(-1* wheelSpeed);
 	}
 	
