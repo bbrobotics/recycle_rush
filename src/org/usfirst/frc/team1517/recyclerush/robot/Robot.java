@@ -78,7 +78,7 @@ public class Robot extends IterativeRobot {
      * This function is called when the autonomous period begins.
      */
     public void autonomousInit() {
-    	int autoMode = BASIC_AUTO;
+    	int autoMode = INDEXER_AUTO;
     	Timer failSafe = new Timer();
     	
     	switch(autoMode)
@@ -98,41 +98,80 @@ public class Robot extends IterativeRobot {
     		
     		case(INDEXER_AUTO):
     			int numberOfTotes = 2; //replace with toggle system
-    			Timer.delay(1);
+    			aF.enableBrakeMode(true);
+    			aB.enableBrakeMode(true);
+    			bF.enableBrakeMode(true);
+    			bB.enableBrakeMode(true);
+    			//Timer.delay(1);
     	
     			indexer.index();
     			
-    			for(int i = 0; i < numberOfTotes - 1; i++)
+    			dEncoderLeft.reset();
+    			
+    			while(dEncoderLeft.get() < 145)
     			{
-    				System.out.println("Entering loop in indexer auto...");
-    				dEncoderRight.reset();
-    				failSafe.start();
-    				while(dEncoderRight.get() < drive.getTicksForDistance(6.75) && failSafe.get() < 10) //10 is placeholder
-    				{
-    					drive.drive(0, -0.5, 0);
-    					System.out.println("Encoder position: " + dEncoderRight.get());
-    				}
-    				drive.drive(0, 0, 0);
-    				failSafe.stop();
-    				indexer.index();
-    				failSafe.reset();
+    				drive.drive(0, -0.75, 0);
     			}
+    			drive.drive(0, 0, 0);
     			
-    			dEncoderRight.reset();
+    			indexer.index();
     			
-    			drive.gyro.reset();
+    			while(dEncoderLeft.get() < 285)
+    			{
+    				drive.drive(0, -0.75, 0);
+    			}
+    			drive.drive(0, 0, 0);
+    			
+    			Timer.delay(0.1);
+    			
+    			/*drive.gyro.reset();
     			
     			failSafe.reset();
     			failSafe.start();
     			
-    			while(failSafe.get() < 5) //5 is placeholder
+    			while(failSafe.get() < 4) //5 is placeholder
     			{
-    				drive.slide(0.75);
+    				drive.slide(1);
     			}
     			
     			drive.drive(0, 0, 0);
     			
+    			//indexer.calibrate();
+    			
     			failSafe.stop();
+    			*/
+    			
+    			drive.gyro.reset();
+    			
+    			while(drive.gyro.getAngle() < 75)
+    			{
+    				drive.drive(0.00001, 0.00001, 1);
+    				System.out.println(drive.gyro.getAngle());
+    			}
+    			
+    			drive.drive(0, 0, 0);
+    			
+    			Timer.delay(0.1);
+    			
+    			dEncoderLeft.reset();
+    			
+    			while(dEncoderLeft.get() < 230)
+    			{
+    				drive.drive(0, -0.5, 0);
+    			}
+    			drive.drive(0, 0, 0);
+    			
+    			indexer.calibrateThreaded();
+    			
+    			Timer.delay(0.1);
+    			
+    			dEncoderLeft.reset();
+    			
+    			while(dEncoderLeft.get() > -25)
+    			{
+    				drive.drive(0, 0.5, 0);
+    			}
+    			drive.drive(0, 0, 0);
     			
     			break;
     	}
@@ -191,7 +230,7 @@ public class Robot extends IterativeRobot {
        // 					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
        // 					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
     	
-       System.out.println("Left pos: " + indexer.leftEnc.pidGet() + " right pos: " + indexer.getRightEnc() + " error: " + indexer.leftPID.getError());
+       //System.out.println("Left pos: " + indexer.leftEnc.pidGet() + " right pos: " + indexer.getRightEnc() + " error: " + indexer.leftPID.getError());
        //System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
        //System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
     	
