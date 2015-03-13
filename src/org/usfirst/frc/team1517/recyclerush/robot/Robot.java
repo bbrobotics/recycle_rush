@@ -110,9 +110,25 @@ public class Robot extends IterativeRobot {
     			
     			while(dEncoderLeft.get() < 145)
     			{
-    				drive.drive(0, -0.75, 0);
+    				drive.drive(0, -0.8, 0);
     			}
     			drive.drive(0, 0, 0);
+    			
+    			/*indexer.calibrate();
+    			indexer.indexThreaded();
+    			Timer.delay(0.1);
+    			
+    			while(indexer.indexing)
+    			{
+    				drive.drive(0, -0.15, 0);
+    			}
+    			while(dEncoderLeft.get() < 290)
+    			{
+    				drive.drive(0,  -0.8, 0);
+    			}
+    			drive.drive(0, 0, 0);
+    			
+    			Timer.delay(0.1);*/
     			
     			indexer.index();
     			
@@ -143,21 +159,27 @@ public class Robot extends IterativeRobot {
     			
     			drive.gyro.reset();
     			
-    			while(drive.gyro.getAngle() < 75)
+    			while(drive.gyro.getAngle() < 70)
     			{
+    				rWheels.pushOut();
     				drive.drive(0.00001, 0.00001, 1);
     				System.out.println(drive.gyro.getAngle());
     			}
     			
     			drive.drive(0, 0, 0);
+    			rWheels.stopWheels();
     			
     			Timer.delay(0.1);
     			
     			dEncoderLeft.reset();
     			
-    			while(dEncoderLeft.get() < 230)
+    			while(dEncoderLeft.get() < 170)
     			{
-    				drive.drive(0, -0.5, 0);
+    				drive.drive(0, -0.7, 0);
+    			}
+    			while(dEncoderLeft.get() < 222)
+    			{
+    				drive.drive(0, -0.4, 0);
     			}
     			drive.drive(0, 0, 0);
     			
@@ -167,7 +189,7 @@ public class Robot extends IterativeRobot {
     			
     			dEncoderLeft.reset();
     			
-    			while(dEncoderLeft.get() > -25)
+    			while(dEncoderLeft.get() > -18)
     			{
     				drive.drive(0, 0.5, 0);
     			}

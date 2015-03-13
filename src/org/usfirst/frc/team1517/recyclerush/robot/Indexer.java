@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.PIDController;
 public class Indexer {
 
 	final double liftSpeed = 1;
-	final int indexPosition = 1800;
+	final int indexPosition = 1700;
 	final int coopPosition = 1000;
 	final int indexTolerance = 10;
 	final int stallCurrent = 22; //units in amperes
@@ -20,6 +20,8 @@ public class Indexer {
 	boolean indexing = false;
 	boolean calibrating = false;
 	boolean moving = false;
+	
+	Thread thread;
 	
 	Victor leftLift, rightLift;
 	//CANTalon leftLift, rightLift;
