@@ -85,6 +85,8 @@ public class Robot extends IterativeRobot {
     	{
     		case(BASIC_AUTO):
     			dEncoderRight.reset();
+    		
+    			System.out.println("Basic auto activating!");
     			
     			failSafe.start();
     			
@@ -103,12 +105,12 @@ public class Robot extends IterativeRobot {
     			bF.enableBrakeMode(true);
     			bB.enableBrakeMode(true);
     			//Timer.delay(1);
-    	
+    			
     			indexer.index();
     			
-    			dEncoderLeft.reset();
+    			dEncoderRight.reset();
     			
-    			while(dEncoderLeft.get() < 145)
+    			while(dEncoderRight.get() < 145)
     			{
     				drive.drive(0, -0.8, 0);
     			}
@@ -132,7 +134,7 @@ public class Robot extends IterativeRobot {
     			
     			indexer.index();
     			
-    			while(dEncoderLeft.get() < 285)
+    			while(dEncoderRight.get() < 285)
     			{
     				drive.drive(0, -0.75, 0);
     			}
@@ -171,13 +173,13 @@ public class Robot extends IterativeRobot {
     			
     			Timer.delay(0.1);
     			
-    			dEncoderLeft.reset();
+    			dEncoderRight.reset();
     			
-    			while(dEncoderLeft.get() < 170)
+    			while(dEncoderRight.get() < 160)
     			{
     				drive.drive(0, -0.7, 0);
     			}
-    			while(dEncoderLeft.get() < 222)
+    			while(dEncoderRight.get() < 222)
     			{
     				drive.drive(0, -0.4, 0);
     			}
@@ -187,9 +189,9 @@ public class Robot extends IterativeRobot {
     			
     			Timer.delay(0.1);
     			
-    			dEncoderLeft.reset();
+    			dEncoderRight.reset();
     			
-    			while(dEncoderLeft.get() > -18)
+    			while(dEncoderRight.get() > -18)
     			{
     				drive.drive(0, 0.5, 0);
     			}
@@ -219,7 +221,7 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
     	
-    	indexer.leftPID.setSetpoint(indexer.rightEnc.get());
+    	indexer.rightPID.setSetpoint(indexer.leftEnc.get());
     	
     	if(controller.getRightTriggerButton() && JoystickUtils.scaledStick(controller.getLeftJoystickX()) == 0 && JoystickUtils.scaledStick(controller.getLeftJoystickY()) == 0 && JoystickUtils.scaledStick(controller.getAnalogTriggers()) != 0)
 		{
@@ -254,36 +256,41 @@ public class Robot extends IterativeRobot {
     	
        //System.out.println("Left pos: " + indexer.leftEnc.pidGet() + " right pos: " + indexer.getRightEnc() + " error: " + indexer.leftPID.getError());
        //System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
-       //System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
+       System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
     	
        if(jdController.getRawButton(1) && !indexer.calibrating && !indexer.indexing)
        {
-    	   //indexer.indexThreaded();
+    	   indexer.indexThreaded();
     	   //indexer.goToTicksThreaded(indexer.coopPosition);
     	   
-    	   if(!indexer.leftPID.isEnable())
+    	   /*if(!indexer.rightPID.isEnable())
     	   {
-    		   indexer.leftPID.enable();
-    	   }
+    		   indexer.rightPID.enable();
+    	   }*/
        }
        else if(jdController.getRawButton(2) && !indexer.isIndexing() && !indexer.moving)
        {
     	   //indexer.indexThreaded();
+    	   //indexer.rightPID.disable();
     	   indexer.calibrateThreaded();
+    	   //indexer.rightPID.enable();
        }
        else if(jdController.getRawButton(3) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving)
        {
     	   //indexerMoving = true;
     	   indexer.manualControl(1, 1);
+    	   //indexer.leftLift.set(0.9);
        }
        else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving && !indexer.getLeftCali() && !indexer.getRightCali())
        {
     	   //indexerMoving = true;
     	   indexer.manualControl(-1, -1);
+    	   //indexer.leftLift.set(-0.9);
        }
        else if(!indexer.calibrating && !indexer.indexing && !indexer.moving)
        {
     	   indexer.manualControl(0, 0);
+    	   //indexer.leftLift.set(0);
     	   
 //    	   if(indexerMoving)
 //    	   {
@@ -309,27 +316,43 @@ public class Robot extends IterativeRobot {
        
        if(!jdController.getRawButton(1))
        {
-    	   if(indexer.leftPID.isEnable())
+    	   if(indexer.rightPID.isEnable())
     	   {
-    		   indexer.leftPID.disable();
+    		   indexer.rightPID.disable();
     	   }
        }
        
-       if(jdController.getRawButton(4))
+       if(controller.getLeftTriggerButton())
        {
-    	   rWheels.pullIn();
-    	   rollers.pullIn();
+    	   if(jdController.getRawButton(4))
+           {
+        	   rWheels.pullInSlow();
+           }
+           else if(jdController.getRawButton(6))
+           {
+        	   rWheels.pushOutSlow();
+           }
+           else 
+    	   {
+        	   rWheels.stopWheels();
+    	   }
        }
-       else if(jdController.getRawButton(6))
+       else
        {
-    	   rWheels.pushOut();
-    	   rollers.pushOut();
+    	   if(jdController.getRawButton(4))
+           {
+        	   rWheels.pullIn();
+           }
+           else if(jdController.getRawButton(6))
+           {
+        	   rWheels.pushOut();
+           }
+           else 
+    	   {
+        	   rWheels.stopWheels();
+    	   }
        }
-       else 
-	   {
-    	   rWheels.stopWheels();
-    	   rollers.stop();
-	   }
+       
        
        rWheels.setArms(jdController.getY());
     }

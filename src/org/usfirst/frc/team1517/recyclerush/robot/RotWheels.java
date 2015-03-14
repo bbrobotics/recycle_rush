@@ -11,15 +11,16 @@ import edu.wpi.first.wpilibj.Victor;
 public class RotWheels {
 	
 	double wheelSpeed = -0.7;
+	double slowSpeed = -0.45;
 	
 	Victor gripper;
-	Victor leftWheel;
-	//Talon leftWheel, rightWheel;
+	//Victor leftWheel;
+	Talon leftWheel, rightWheel;
 	
 	public RotWheels() {
-		leftWheel = new Victor(7);
-		gripper = new Victor(5);//new Victor(2);
-		//leftWheel = new Talon(0);
+		//leftWheel = new Victor(7);
+		gripper = new Victor(2);
+		leftWheel = new Talon(0);
 		//rightWheel = new Talon(1);
 		//gripper = new Talon(2);
 	}
@@ -28,8 +29,16 @@ public class RotWheels {
 		setWheels(wheelSpeed);
 	}
 	
+	public void pullInSlow() {
+		setWheels(slowSpeed);
+	}
+	
 	public void pushOut() { 
-		setWheels(-1* wheelSpeed);
+		setWheels(-1 * wheelSpeed);
+	}
+	
+	public void pushOutSlow() {
+		setWheels(-1 * slowSpeed);
 	}
 	
 	public void stopWheels() {
