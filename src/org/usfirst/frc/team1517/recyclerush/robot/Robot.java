@@ -99,7 +99,7 @@ public class Robot extends IterativeRobot {
     			break;
     		
     		case(INDEXER_AUTO):
-    			int numberOfTotes = 2; //replace with toggle system
+    			int numberOfTotes = 1; //replace with toggle system
     			aF.enableBrakeMode(true);
     			aB.enableBrakeMode(true);
     			bF.enableBrakeMode(true);
@@ -108,37 +108,29 @@ public class Robot extends IterativeRobot {
     			
     			indexer.index();
     			
-    			dEncoderRight.reset();
-    			
-    			while(dEncoderRight.get() < 145)
+    			if(numberOfTotes > 1)
     			{
-    				drive.drive(0, -0.8, 0);
+    				dEncoderRight.reset();
+        			
+        			while(dEncoderRight.get() < 145)
+        			{
+        				drive.drive(0, -0.8, 0);
+        			}
+        			drive.drive(0, 0, 0);
+        			
+        			indexer.index();
+        			
     			}
-    			drive.drive(0, 0, 0);
     			
-    			/*indexer.calibrate();
-    			indexer.indexThreaded();
-    			Timer.delay(0.1);
-    			
-    			while(indexer.indexing)
+    			if(numberOfTotes > 2)
     			{
-    				drive.drive(0, -0.15, 0);
+    				while(dEncoderRight.get() < 285)
+        			{
+        				drive.drive(0, -0.75, 0);
+        			}
+        			drive.drive(0, 0, 0);
+        			
     			}
-    			while(dEncoderLeft.get() < 290)
-    			{
-    				drive.drive(0,  -0.8, 0);
-    			}
-    			drive.drive(0, 0, 0);
-    			
-    			Timer.delay(0.1);*/
-    			
-    			indexer.index();
-    			
-    			while(dEncoderRight.get() < 285)
-    			{
-    				drive.drive(0, -0.75, 0);
-    			}
-    			drive.drive(0, 0, 0);
     			
     			Timer.delay(0.1);
     			
@@ -161,7 +153,7 @@ public class Robot extends IterativeRobot {
     			
     			drive.gyro.reset();
     			
-    			while(drive.gyro.getAngle() < 70)
+    			while(drive.gyro.getAngle() < 75)
     			{
     				rWheels.pushOut();
     				drive.drive(0.00001, 0.00001, 1);
@@ -193,7 +185,7 @@ public class Robot extends IterativeRobot {
     			
     			while(dEncoderRight.get() > -18)
     			{
-    				drive.drive(0, 0.5, 0);
+    				drive.drive(0, 0.4, 0);
     			}
     			drive.drive(0, 0, 0);
     			
@@ -260,13 +252,13 @@ public class Robot extends IterativeRobot {
     	
        if(jdController.getRawButton(1) && !indexer.calibrating && !indexer.indexing)
        {
-    	   indexer.indexThreaded();
+    	   //indexer.indexThreaded();
     	   //indexer.goToTicksThreaded(indexer.coopPosition);
     	   
-    	   /*if(!indexer.rightPID.isEnable())
+    	   if(!indexer.rightPID.isEnable())
     	   {
     		   indexer.rightPID.enable();
-    	   }*/
+    	   }
        }
        else if(jdController.getRawButton(2) && !indexer.isIndexing() && !indexer.moving)
        {
