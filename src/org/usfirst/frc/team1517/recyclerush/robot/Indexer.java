@@ -216,7 +216,6 @@ public class Indexer {
 			e.printStackTrace();
 		}
 		calibrate();
-		//goToPosition(indexPosition, indexTolerance);
 		System.out.println("left: " + leftEnc.get() + " right: " + rightEnc.get());
 		goToTicks(indexPosition, indexTolerance);
 		indexing = false;

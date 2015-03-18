@@ -2,9 +2,7 @@ package org.usfirst.frc.team1517.recyclerush.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.CANTalon;
-import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -23,14 +21,11 @@ public class Robot extends IterativeRobot {
     
 	CANTalon aF, aB, bF, bB;
 	
-	BuiltInAccelerometer bIAccelerometer;
-	Gyro dGyro;
 	Encoder dEncoderLeft, dEncoderRight;
 	
 	MecanumDriveProportionalGyro drive;
 	Indexer indexer;
 	RotWheels rWheels;
-	Rollers rollers;
 	
 	XboxController controller;
 	Joystick jdController;
@@ -38,8 +33,6 @@ public class Robot extends IterativeRobot {
 	final int BASIC_AUTO = 8999;
 	final int INDEXER_AUTO = 9000;
 	final int LANDFILL_AUTO = 9001;
-	
-	boolean indexerMoving = true;
 	
 	/**
      * This function is run when the robot is first started up and should be
@@ -56,18 +49,12 @@ public class Robot extends IterativeRobot {
     	bF.enableBrakeMode(false);
     	bB.enableBrakeMode(false);
     	
-    	bIAccelerometer = new BuiltInAccelerometer();
-    	
     	dEncoderLeft = new Encoder(0, 1);
     	dEncoderRight = new Encoder(2, 3);
     	
-    	
     	drive = new MecanumDriveProportionalGyro(aF, aB, bF, bB, 0.02);
-    	
     	indexer = new Indexer();
-    	
     	rWheels = new RotWheels();
-    	rollers = new Rollers();
     	
     	controller = new XboxController(0); //The controllers are now zero indexed.
     	jdController = new Joystick(1);
@@ -139,7 +126,7 @@ public class Robot extends IterativeRobot {
     			failSafe.reset();
     			failSafe.start();
     			
-    			while(failSafe.get() < 4) //5 is placeholder
+    			while(failSafe.get() < 4)
     			{
     				drive.slide(1);
     			}
@@ -241,20 +228,12 @@ public class Robot extends IterativeRobot {
     		drive.gyro.reset();
     	}
     	
-    	
-       //System.out.println("Accel x: " + String.valueOf(bIAccelerometer.getX()) 
-       // 					+ ", y: " + String.valueOf(bIAccelerometer.getY()) 
-       // 					+ ", z: " + String.valueOf(bIAccelerometer.getZ()));
-    	
        //System.out.println("Left pos: " + indexer.leftEnc.pidGet() + " right pos: " + indexer.getRightEnc() + " error: " + indexer.leftPID.getError());
        //System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
        System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
     	
        if(jdController.getRawButton(1) && !indexer.calibrating && !indexer.indexing)
        {
-    	   //indexer.indexThreaded();
-    	   //indexer.goToTicksThreaded(indexer.coopPosition);
-    	   
     	   if(!indexer.rightPID.isEnable())
     	   {
     		   indexer.rightPID.enable();
@@ -262,48 +241,19 @@ public class Robot extends IterativeRobot {
        }
        else if(jdController.getRawButton(2) && !indexer.isIndexing() && !indexer.moving)
        {
-    	   //indexer.indexThreaded();
-    	   //indexer.rightPID.disable();
     	   indexer.calibrateThreaded();
-    	   //indexer.rightPID.enable();
        }
        else if(jdController.getRawButton(3) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving)
        {
-    	   //indexerMoving = true;
     	   indexer.manualControl(1, 1);
-    	   //indexer.leftLift.set(0.9);
        }
        else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving && !indexer.getLeftCali() && !indexer.getRightCali())
        {
-    	   //indexerMoving = true;
     	   indexer.manualControl(-1, -1);
-    	   //indexer.leftLift.set(-0.9);
        }
        else if(!indexer.calibrating && !indexer.indexing && !indexer.moving)
        {
     	   indexer.manualControl(0, 0);
-    	   //indexer.leftLift.set(0);
-    	   
-//    	   if(indexerMoving)
-//    	   {
-//    		   indexerMoving = false;
-//    		   if(indexer.leftEnc.get() > indexer.rightEnc.get())
-//    		   {
-//    			   while(indexer.leftEnc.get() > indexer.rightEnc.get())
-//    			   {
-//    				   indexer.manualControl(0, 1);
-//    			   }
-//    			   indexer.manualControl(0, 0);
-//    		   }
-//    		   else if(indexer.rightEnc.get() > indexer.leftEnc.get())
-//    		   {
-//    			   while(indexer.rightEnc.get() > indexer.leftEnc.get())
-//    			   {
-//    				   indexer.manualControl(1, 0);
-//    			   }
-//    			   indexer.manualControl(0, 0);
-//    		   }
-//    	   }
        }
        
        if(!jdController.getRawButton(1))
