@@ -228,9 +228,9 @@ public class Robot extends IterativeRobot {
     		drive.gyro.reset();
     	}
     	
-       //System.out.println("Left pos: " + indexer.leftEnc.pidGet() + " right pos: " + indexer.getRightEnc() + " error: " + indexer.leftPID.getError());
+       System.out.println("Left pos: " + indexer.leftEnc.pidGet() + " right pos: " + indexer.getRightEnc() + " error: " + indexer.leftPID.getError());
        //System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
-       System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
+       //System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
     	
        if(jdController.getRawButton(1) && !indexer.calibrating && !indexer.indexing)
        {
@@ -243,9 +243,17 @@ public class Robot extends IterativeRobot {
        {
     	   indexer.calibrateThreaded();
        }
+       else if(jdController.getRawButton(3) && jdController.getRawButton(11) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving)
+       {
+    	   indexer.manualControl(0.5, 0.5);
+       }
        else if(jdController.getRawButton(3) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving)
        {
     	   indexer.manualControl(1, 1);
+       }
+       else if(jdController.getRawButton(5) && jdController.getRawButton(11) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving && !indexer.getLeftCali() && !indexer.getRightCali())
+       {
+    	   indexer.manualControl(-0.5, -0.5);
        }
        else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving && !indexer.getLeftCali() && !indexer.getRightCali())
        {

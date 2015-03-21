@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.PIDController;
 public class Indexer {
 
 	final double liftSpeed = 1;
-	final int indexPosition = 1700;
+	final int indexPosition = 646;//1700;
 	final int coopPosition = 1000;
 	final int indexTolerance = 10;
 	final int stallCurrent = 22; //units in amperes
@@ -261,7 +261,7 @@ public class Indexer {
 		if(!indexing)
 		{
 			leftLift.set(speedL);
-			rightLift.set(speedR * 0.9/*0.875*/);
+			rightLift.set(speedR/*0.875*/);
 			return true;
 		}
 		else return false;
