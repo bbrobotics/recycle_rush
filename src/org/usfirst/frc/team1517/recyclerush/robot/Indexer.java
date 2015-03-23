@@ -12,7 +12,7 @@ public class Indexer {
 	final double liftSpeed = 1;
 	final int indexPosition = 646;//1700;
 	final int coopPosition = 1000;
-	final int indexTolerance = 10;
+	final int indexTolerance = 5;
 	final int stallCurrent = 22; //units in amperes
 	final double distancePerPulse = 0.7;
 	final double timeoutPerPulse = 0.0017;

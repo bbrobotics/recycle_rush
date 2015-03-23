@@ -21,7 +21,7 @@ public class RotWheels {
 		//leftWheel = new Victor(7);
 		gripper = new Victor(2);
 		leftWheel = new Talon(0);
-		//rightWheel = new Talon(1);
+		rightWheel = new Talon(1);
 		//gripper = new Talon(2);
 	}
 	
@@ -41,6 +41,12 @@ public class RotWheels {
 		setWheels(-1 * slowSpeed);
 	}
 	
+	public void spinRight()
+	{
+		leftWheel.set(wheelSpeed);
+		rightWheel.set(-1 * wheelSpeed);
+	}
+	
 	public void stopWheels() {
 		setWheels(0);
 	}
@@ -48,7 +54,7 @@ public class RotWheels {
 	public void setWheels(double speed)
 	{
 		leftWheel.set(speed);
-		//rightWheel.set(speed);
+		rightWheel.set(speed);
 	}
 	
 	public void open()

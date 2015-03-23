@@ -30,9 +30,11 @@ public class Robot extends IterativeRobot {
 	XboxController controller;
 	Joystick jdController;
 	
+	final int BASIC_LANDFILL_AUTO = -8999;
 	final int BASIC_AUTO = 8999;
 	final int INDEXER_AUTO = 9000;
 	final int LANDFILL_AUTO = 9001;
+	final int CAN_AUTO = 2168;
 	
 	/**
      * This function is run when the robot is first started up and should be
@@ -65,7 +67,7 @@ public class Robot extends IterativeRobot {
      * This function is called when the autonomous period begins.
      */
     public void autonomousInit() {
-    	int autoMode = INDEXER_AUTO;
+    	int autoMode = BASIC_AUTO;
     	Timer failSafe = new Timer();
     	
     	switch(autoMode)
@@ -77,7 +79,7 @@ public class Robot extends IterativeRobot {
     			
     			failSafe.start();
     			
-    			while(dEncoderRight.get() < 215 && failSafe.get() < 3.5)
+    			while(dEncoderRight.get() < 215 && failSafe.get() < 3.5) //was 215 ticks
     			{
     				drive.drive(0, -0.5, 0);
     			}
@@ -85,6 +87,22 @@ public class Robot extends IterativeRobot {
     			failSafe.stop();
     			break;
     		
+    		case(BASIC_LANDFILL_AUTO):
+    			dEncoderRight.reset();
+    		
+    			System.out.println("Basic auto activating!");
+    			
+    			failSafe.start();
+    			
+    			while(dEncoderRight.get() < 110 && failSafe.get() < 3.5)
+    			{
+    				drive.drive(0, -0.5, 0);
+    			}
+    			drive.drive(0, 0, 0);
+    			failSafe.stop();
+    			break;
+    			
+    			
     		case(INDEXER_AUTO):
     			int numberOfTotes = 1; //replace with toggle system
     			aF.enableBrakeMode(true);
@@ -121,26 +139,9 @@ public class Robot extends IterativeRobot {
     			
     			Timer.delay(0.1);
     			
-    			/*drive.gyro.reset();
-    			
-    			failSafe.reset();
-    			failSafe.start();
-    			
-    			while(failSafe.get() < 4)
-    			{
-    				drive.slide(1);
-    			}
-    			
-    			drive.drive(0, 0, 0);
-    			
-    			//indexer.calibrate();
-    			
-    			failSafe.stop();
-    			*/
-    			
     			drive.gyro.reset();
     			
-    			while(drive.gyro.getAngle() < 75)
+    			while(drive.gyro.getAngle() < 70)
     			{
     				rWheels.pushOut();
     				drive.drive(0.00001, 0.00001, 1);
@@ -164,17 +165,56 @@ public class Robot extends IterativeRobot {
     			}
     			drive.drive(0, 0, 0);
     			
-    			indexer.calibrateThreaded();
+    			if(numberOfTotes > 2)
+    			{
+    				indexer.calibrateThreaded();
+    				
+    				Timer.delay(0.1);
+        			
+        			dEncoderRight.reset();
+        			
+        			while(dEncoderRight.get() > -15) // was -18
+        			{
+        				drive.drive(0, 0.4, 0);
+        			}
+        			drive.drive(0, 0, 0);
+    			}
     			
+    			break;
+    			
+    		case(CAN_AUTO):
+    			indexer.goToTicks(200, 5);
+    		
     			Timer.delay(0.1);
-    			
+			
     			dEncoderRight.reset();
-    			
-    			while(dEncoderRight.get() > -18)
+			
+    			while(dEncoderRight.get() > -15) // was -18
     			{
     				drive.drive(0, 0.4, 0);
     			}
     			drive.drive(0, 0, 0);
+    			
+    			Timer.delay(0.1);
+    			
+    			drive.gyro.reset();
+    			
+    			while(drive.gyro.getAngle() > -75)
+    			{
+    				drive.drive(0.00001, 0.00001, 1);
+    				System.out.println(drive.gyro.getAngle());
+    			}
+    			
+    			drive.drive(0, 0, 0);
+    			
+    			failSafe.reset();
+    			failSafe.start();
+    			while(dEncoderRight.get() < 215 && failSafe.get() < 3.5) //was 215 ticks
+    			{
+    				drive.drive(0, -0.5, 0);
+    			}
+    			drive.drive(0, 0, 0);
+    			failSafe.stop();
     			
     			break;
     	}
@@ -228,9 +268,11 @@ public class Robot extends IterativeRobot {
     		drive.gyro.reset();
     	}
     	
-       System.out.println("Left pos: " + indexer.leftEnc.pidGet() + " right pos: " + indexer.getRightEnc() + " error: " + indexer.leftPID.getError());
+       //System.out.println("Left pos: " + indexer.leftEnc.pidGet() + " right pos: " + indexer.getRightEnc() + " error: " + indexer.leftPID.getError());
        //System.out.println("Left switch: " + indexer.leftCali.get() + " right switch: " + indexer.rightCali.get());
        //System.out.println("Left pos: " + dEncoderLeft.get() + " right pos: " + dEncoderRight.get());
+    	
+    	//System.out.println(jdController.getRawAxis(3));
     	
        if(jdController.getRawButton(1) && !indexer.calibrating && !indexer.indexing)
        {
@@ -243,21 +285,17 @@ public class Robot extends IterativeRobot {
        {
     	   indexer.calibrateThreaded();
        }
-       else if(jdController.getRawButton(3) && jdController.getRawButton(11) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving)
-       {
-    	   indexer.manualControl(0.5, 0.5);
-       }
        else if(jdController.getRawButton(3) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving)
        {
     	   indexer.manualControl(1, 1);
        }
-       else if(jdController.getRawButton(5) && jdController.getRawButton(11) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving && !indexer.getLeftCali() && !indexer.getRightCali())
-       {
-    	   indexer.manualControl(-0.5, -0.5);
-       }
        else if(jdController.getRawButton(5) && !indexer.isIndexing() && !indexer.calibrating && !indexer.moving && !indexer.getLeftCali() && !indexer.getRightCali())
        {
     	   indexer.manualControl(-1, -1);
+       }
+       else if(jdController.getRawButton(11) && !indexer.calibrating && !indexer.indexing && !indexer.moving)
+       {
+    	   indexer.manualControl(0.276, 0.276);
        }
        else if(!indexer.calibrating && !indexer.indexing && !indexer.moving)
        {
@@ -296,6 +334,10 @@ public class Robot extends IterativeRobot {
            else if(jdController.getRawButton(6))
            {
         	   rWheels.pushOut();
+           }
+           else if(jdController.getRawButton(12))
+           {
+        	   rWheels.spinRight();
            }
            else 
     	   {
